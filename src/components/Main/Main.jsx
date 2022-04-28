@@ -24,7 +24,7 @@ const ExpenseTracker = () => {
     <>
       <Card className={classes.root}>
         <Button variant="outlined" color='primary' onClick={handleLogout} style={{ margin: "5px" }}>Signout</Button>
-        <CardHeader title="Money Tracker" subheader="Made by Smit and Hardish" />
+        <CardHeader title="Money Tracker" />
         <CardContent>
           <Typography align="center" variant="h5">Total Balance ${balance}</Typography>
           <Typography variant="subtitle1" style={{ lineHeight: '1.5em', marginTop: '20px' }}>
