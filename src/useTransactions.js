@@ -1,13 +1,34 @@
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { ExpenseTrackerContext } from './context/context';
-
+import { useAuth } from './context/AuthContext';
 import { incomeCategories, expenseCategories, resetCategories } from './constants/categories';
 
 const useTransactions = (title) => {
   resetCategories();
-  const { transactions } = useContext(ExpenseTrackerContext);
+  const { currentUser } = useAuth();
+  const [transactions, setTransactions] = useState([]);
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/gettransaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: currentUser.email
+        })
+      });
+      const data = await response.json();
+      setTransactions(data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+  fetchData()
   const rightTransactions = transactions.filter((t) => t.type === title);
-  const total = rightTransactions.reduce((acc, currVal) => acc += currVal.amount, 0);
+  const total = rightTransactions.reduce((acc, curr) => {
+    return acc + curr.amount;
+  }, 0);
   const categories = title === 'Income' ? incomeCategories : expenseCategories;
 
   rightTransactions.forEach((t) => {

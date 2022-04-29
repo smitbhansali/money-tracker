@@ -8,6 +8,7 @@ import formatDate from '../../../utils/formatDate';
 import { ExpenseTrackerContext } from '../../../context/context';
 import { incomeCategories, expenseCategories } from '../../../constants/categories';
 import useStyles from './styles';
+import { useAuth } from '../../../context/AuthContext';
 
 const initialState = {
   amount: '',
@@ -18,10 +19,10 @@ const initialState = {
 
 const NewTransactionForm = () => {
   const classes = useStyles();
-  const { addTransaction } = useContext(ExpenseTrackerContext);
   const [formData, setFormData] = useState(initialState);
   const { segment } = useSpeechContext();
   const [open, setOpen] = React.useState(false);
+  const { currentUser } = useAuth();
 
   const createTransaction = () => {
     if (Number.isNaN(Number(formData.amount)) || !formData.date.includes('-')) return;
@@ -33,10 +34,30 @@ const NewTransactionForm = () => {
     }
 
     setOpen(true);
-    addTransaction({ ...formData, amount: Number(formData.amount), id: uuidv4() });
+    setFormData({ ...formData, amount: Number(formData.amount) });
+    addtransaction();
     setFormData(initialState);
   };
-
+  const addtransaction = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/addtransaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: currentUser.email,
+          amount: formData.amount,
+          category: formData.category,
+          type: formData.type,
+          date: formData.date
+        })
+      });
+      const data = await response.json();
+    } catch (error) {
+      console.log("error", error);
+    }
+  }
   useEffect(() => {
     if (segment) {
       if (segment.intent.intent === 'add_expense') {
@@ -84,12 +105,12 @@ const NewTransactionForm = () => {
       <Snackbar open={open} setOpen={setOpen} />
       <Grid item xs={12}>
         <Typography align="center" variant="subtitle2" gutterBottom>
-        {segment ? (
-        <div className="segment">
-          {segment.words.map((w) => w.value).join(" ")}
-        </div>
-      ) : null}
-         {/* {isSpeaking ? <BigTranscript /> : 'Start adding transactions'}  */}
+          {segment ? (
+            <div className="segment">
+              {segment.words.map((w) => w.value).join(" ")}
+            </div>
+          ) : null}
+          {/* {isSpeaking ? <BigTranscript /> : 'Start adding transactions'}  */}
         </Typography>
       </Grid>
       <Grid item xs={6}>

@@ -20,7 +20,7 @@ router.post('/addtransaction', async (req, res) => {
         res.status(500).send("Internal Server Error")
     }
 })
-router.get('/gettransaction', async (req, res) => {
+router.post('/gettransaction', async (req, res) => {
     try {
         const user_email = req.body.email;
         const user = await User.find({ email: user_email });
