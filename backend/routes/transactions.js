@@ -32,12 +32,8 @@ router.post('/gettransaction', async (req, res) => {
 })
 router.post('/deletetransaction', async (req, res) => {
     try {
-        const user_email = req.body.email;
-        const user_amount = req.body.amount;
-        const user_category = req.body.category;
-        const user_type = req.body.type;
-        const user_date = req.body.date;
-        const user = await User.findOneAndDelete({ email: user_email, amount: user_amount, category: user_category, type: user_type, date: user_date });
+        const user_id = req.body.id;
+        const user = await User.findOneAndDelete({ _id: user_id });
         res.send(user);
     } catch (error) {
         console.error(error.message)

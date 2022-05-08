@@ -1,5 +1,4 @@
-import { useContext, useState, useEffect } from 'react';
-import { ExpenseTrackerContext } from './context/context';
+import { useState } from 'react';
 import { useAuth } from './context/AuthContext';
 import { incomeCategories, expenseCategories, resetCategories } from './constants/categories';
 

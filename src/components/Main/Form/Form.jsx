@@ -1,11 +1,9 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Typography, Grid, Button, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
-import { v4 as uuidv4 } from 'uuid';
-
+import { CSVLink } from 'react-csv';
 import { useSpeechContext } from '@speechly/react-client';
 import Snackbar from '../../Snackbar/Snackbar';
 import formatDate from '../../../utils/formatDate';
-import { ExpenseTrackerContext } from '../../../context/context';
 import { incomeCategories, expenseCategories } from '../../../constants/categories';
 import useStyles from './styles';
 import { useAuth } from '../../../context/AuthContext';
@@ -23,6 +21,25 @@ const NewTransactionForm = () => {
   const { segment } = useSpeechContext();
   const [open, setOpen] = React.useState(false);
   const { currentUser } = useAuth();
+  const [transactions, Settransactions] = useState([]);
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/gettransaction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: currentUser.email
+        })
+      });
+      const data = await response.json();
+      Settransactions(data)
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+  fetchData();
 
   const createTransaction = () => {
     if (Number.isNaN(Number(formData.amount)) || !formData.date.includes('-')) return;
@@ -53,7 +70,6 @@ const NewTransactionForm = () => {
           date: formData.date
         })
       });
-      const data = await response.json();
     } catch (error) {
       console.log("error", error);
     }
@@ -99,7 +115,6 @@ const NewTransactionForm = () => {
   }, [segment]);
 
   const selectedCategories = formData.type === 'Income' ? incomeCategories : expenseCategories;
-
   return (
     <Grid container spacing={2}>
       <Snackbar open={open} setOpen={setOpen} />
@@ -138,6 +153,7 @@ const NewTransactionForm = () => {
         <TextField fullWidth label="Date" type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: formatDate(e.target.value) })} />
       </Grid>
       <Button className={classes.button} variant="outlined" color="primary" fullWidth onClick={createTransaction}>Create</Button>
+      <Button className={classes.button} variant="outlined" color="primary" fullWidth><CSVLink data={transactions} style={{ textDecoration: "none" }}>Download Transaction History</CSVLink></Button>
     </Grid>
   );
 };
