@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { Grid } from '@material-ui/core';
 import { SpeechState, useSpeechContext } from "@speechly/react-client";
 import { PushToTalkButton, PushToTalkButtonContainer } from '@speechly/react-ui';
+import { useAuth } from './context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 import { Details, Main } from './components';
 import useStyles from './styles';
@@ -12,12 +14,6 @@ const Dashboard = () => {
     const main = useRef(null)
 
     const executeScroll = () => main.current.scrollIntoView()
-
-    // useEffect(() => {
-    //   if (speechState === speechState.Recording) {
-    //     executeScroll();
-    //   }
-    // }, [speechState]);
     return (
         <div>
             <Grid className={classes.grid} container spacing={0} alignItems="center" justifyContent="center" style={{ height: '100vh' }}>
